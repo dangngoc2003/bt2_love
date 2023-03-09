@@ -13,8 +13,21 @@
         }
 
         img {
-            width: 100px;
-            height: 100px;
+            width: 200px;
+            height: 150px;
+        }
+
+        .hover {
+            position: relative;
+        }
+
+        .div-hover {
+            position: absolute;
+            display: none;
+        }
+
+        .hover:hover .div-hover {
+            display: block;
         }
     </style>
 </head>
@@ -30,10 +43,46 @@
         </div>
         <div class="col-4">
             <form  th:action="@{/products/search}" method="get" >
-                <label><input type="text" th:value="${search}"   name="search"></label>
+                <label><input type="text" th:value="${search}"    name="search"></label>
                 <button  class="btn btn-primary">Search</button>
+                <div>
+                    <label>Category: <select name="category" th:selected="category" >
+                        <option value="0">---</option>
+                        <option th:each="c : ${categories}" th:text="${c.name}"  th:value="${c.id}"></option>
+                    </select></label><br>
+                </div>
             </form>
         </div>
+        <div>
+        <div class="hover">
+            <a class="btn btn-primary" href="#">Cart</a>
+            <table class="table table-striped div-hover" style="background-color: #f2f0f0; width: 50%; z-index: 1">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Category</th>
+                    <th colspan="1" style="text-align: center" >Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  th:each="p, status : ${listCard}">
+                    <td th:text="${status.count}"></td>
+                    <td ><a th:text="${p.name}" th:href="@{/products/detail/__${p.id}__}" style="color: black;text-decoration: none"></a></td>
+                    <td th:text="${p.price}"></td>
+                    <td th:text="${p.quantity}"></td>
+                    <td th:text="${p.category.name}"></td>
+                    <td><a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')"
+                           th:href="@{/products/deleteCard/__${p.id}__}">DeleteCard</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        </div>
+
     </div>
     <table class="table table-striped" >
         <thead>
@@ -57,11 +106,14 @@
             <td th:text="${p.quantity}"></td>
             <td th:text="${p.description}"></td>
             <td th:text="${p.category.name}"></td>
-            <td><a class="btn btn-warning"
+            <td><a class="btn btn-warning" onclick="return confirm('Bạn có chắc chắn muốn sửa sản phẩm này?')"
                    th:href="@{/products/update/{id}(id=${p.id})}">Update</a>
             </td>
-            <td><a class="btn btn-danger"
+            <td><a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')"
                    th:href="@{/products/delete/__${p.id}__}">Delete</a>
+            </td>
+            <td><a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')"
+                   th:href="@{/products/buy/__${p.id}__}">Buy</a>
             </td>
         </tr>
         </tbody>

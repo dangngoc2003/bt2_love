@@ -32,15 +32,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
-@EnableSpringDataWebSupport
+
 @Configuration
 @ComponentScan("com.example.homework")
 @EnableWebMvc
 @EnableTransactionManagement
+@EnableSpringDataWebSupport
 @EnableJpaRepositories("com.example.homework.repository")
 @PropertySource("classpath:upload.properties" )
 public class AppConfig implements WebMvcConfigurer, ApplicationContextAware {
-    @Value("${C:\\Users\\Admin\\IdeaProjects\\homework\\src\\main\\resources\\upload.properties}")
+    @Value("${upload}")
     private String fileUpload;
     private ApplicationContext applicationContext;
     @Override

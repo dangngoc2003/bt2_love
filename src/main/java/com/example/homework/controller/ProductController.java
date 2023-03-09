@@ -1,5 +1,6 @@
 package com.example.homework.controller;
 
+import com.example.homework.model.Category;
 import com.example.homework.model.Product;
 import com.example.homework.service.Iplm.CategoryService;
 import com.example.homework.service.Iplm.ProductService;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Optional;
 
 @RequestMapping("/products")
 @Controller
@@ -22,7 +25,21 @@ public class ProductController {
     public ModelAndView findAll(@PageableDefault(value = 3) Pageable pageable){
        ModelAndView modelAndView=new ModelAndView("/product/list");
        modelAndView.addObject("products",productService.findAll(pageable));
+       modelAndView.addObject("categories",categoryService.findAll());
+        modelAndView.addObject("listCard",productService.findListCart());
+
        return modelAndView;
+    }
+    @GetMapping("/buy/{id}")
+    public String choiceCart(@PageableDefault(value = 3) Pageable pageable,@PathVariable Long id,Model model){
+       productService.choiceCart(id);
+        return "redirect:/products";
+    }
+
+    @PostMapping("/createC")
+    public String  createC(@ModelAttribute Category category){
+        categoryService.save(category);
+        return "redirect:/products/category";
     }
     @GetMapping("/create")
     public ModelAndView createForm(){
@@ -64,6 +81,28 @@ public class ProductController {
         ModelAndView modelAndView=new ModelAndView("/product/detail");
         modelAndView.addObject("product",productService.findById(id));
     return modelAndView;
+    }
+    @GetMapping("/deleteCard/{id}")
+    public String deleteCard(@PathVariable Long id){
+        productService.deleteCard(id);
+        return "redirect:/products";
+
+    }
+    @GetMapping("/search")
+    public ModelAndView search(@PageableDefault(value = 3)@RequestParam("search") Optional<String> name, @RequestParam("category")String category_id ,Pageable pageable){
+    ModelAndView modelAndView=new ModelAndView("/product/list");
+    Long category=Long.valueOf(category_id);
+        if (category!=0){
+            modelAndView.addObject("search",name.get() );
+            modelAndView.addObject("categories",categoryService.findAll());
+            modelAndView.addObject("products",productService.findAll(name.get(),category,pageable));
+        }else {
+            modelAndView.addObject("categories",categoryService.findAll());
+            modelAndView.addObject("products",productService.findName(name.get(),pageable));
+            modelAndView.addObject("category",categoryService.findById(category));
+        }
+        return modelAndView;
+
     }
 
 
